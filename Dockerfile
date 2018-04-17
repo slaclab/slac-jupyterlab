@@ -64,6 +64,14 @@ RUN  source scl_source enable rh-python36 && \
 #RUN  source scl_source enable rh-python36 && \
 #      python3 -m ipykernel install --name 'SLAC_Stack'
 
+RUN source scl_source enable rh-python36 && \
+      pip3  --no-cache-dir install \
+        https://github.com/ioam/holoviews/zipball/master \
+        https://github.com/bokeh/datashader/zipball/master && \
+      pip3  --no-cache-dir install \
+        https://github.com/ioam/holoviews/zipball/master \
+        https://github.com/bokeh/datashader/zipball/master
+
 ENV  SVXT="jupyterlab nbserverproxy nbdime"
 RUN  source scl_source enable rh-python36 && \
        for s in $SVXT; do \
@@ -166,7 +174,7 @@ RUN  cd /etc/profile.d && \
      for i in local*; do \
          ln ${i} $(basename ${i} .sh).csh ; \
      done
-RUN  for i in notebooks WORK DATA idleculler ; do \
+RUN  for i in notebooks idleculler ; do \
         mkdir -p /etc/skel/${i} ; \
      done	
 COPY slac_kernel_py3.json \
