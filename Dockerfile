@@ -1,4 +1,5 @@
-FROM centos:7
+FROM nvidia/cuda:9.0-cudnn7-runtime-centos7
+# FROM centos:7
 
 USER root
 RUN  yum install -y epel-release
@@ -36,7 +37,6 @@ RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade virtualenv virtualenvwrapper \
       ipykernel \
       pipenv \
-      nbdime \
       nbval \
       numpy \
       scipy \
@@ -47,7 +47,10 @@ RUN  source scl_source enable rh-python36 && \
       matplotlib \
       pypandoc \
       bokeh \
-      seaborn
+      seaborn \
+      pyqtgraph
+
+#nbdime \
       
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install \
@@ -58,8 +61,8 @@ RUN  source scl_source enable rh-python36 && \
         https://github.com/jupyterhub/nbserverproxy/zipball/master
 RUN  git ls-remote https://github.com/jupyterlab/jupyterlab.git master | \
        awk '{print $1}' > /root/jupyterlab.commit
-RUN  source scl_source enable rh-python36 && \
-      python3 $(which nbdime) config-git --enable --system
+#RUN  source scl_source enable rh-python36 && \
+#      python3 $(which nbdime) config-git --enable --system
       
 #RUN  source scl_source enable rh-python36 && \
 #      python3 -m ipykernel install --name 'SLAC_Stack'
@@ -72,7 +75,8 @@ RUN source scl_source enable rh-python36 && \
         https://github.com/ioam/holoviews/zipball/master \
         https://github.com/bokeh/datashader/zipball/master
 
-ENV  SVXT="jupyterlab nbserverproxy nbdime"
+#ENV  SVXT="jupyterlab nbserverproxy nbdime"
+ENV  SVXT="jupyterlab nbserverproxy"
 RUN  source scl_source enable rh-python36 && \
        for s in $SVXT; do \
           jupyter serverextension enable ${s} --py --sys-prefix ; \
@@ -133,6 +137,7 @@ RUN  source scl_source enable rh-python36 && \
 RUN  source scl_source enable rh-python36 && \
        pip3  --no-cache-dir  install --upgrade pip \
         zmq \
+        Scrapy \
         pygments \
         humanize \
         tqdm \
@@ -143,11 +148,12 @@ RUN  source scl_source enable rh-python36 && \
         Pillow \
         opencv-python \
         scikit-learn \
-        tensorflow \
+        tensorflow-gpu \
         tensorboard \
         keras \
-        torch torchvision
-
+        torch torchvision \
+        nltk \
+        statsmodels 
 
 # Lab extensions require write permissions by running user.
 RUN  groupadd -g 768 jupyter && \
