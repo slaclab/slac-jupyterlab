@@ -14,7 +14,7 @@ jupyter lab build 2>&1 >/dev/null
 sync
 cd ${HOME}
 # Create standard dirs
-for i in notebooks DATA WORK idleculler; do
+for i in notebooks idleculler; do
     mkdir -p "${HOME}/${i}"
 done
 # Run idle culler.
