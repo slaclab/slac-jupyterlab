@@ -1,23 +1,27 @@
 FROM nvidia/cuda:9.0-cudnn7-runtime-centos7
-# FROM centos:7
 
 USER root
 RUN  yum install -y epel-release
 RUN  yum repolist
 RUN  yum -y upgrade
 RUN  yum -y install gcc \
-      git sudo \
+      git bazel sudo \
       python-devel http-parser nodejs \
       make zlib-devel perl-ExtUtils-MakeMaker gettext \
+      gcc openssl-devel libffi-devel \
       pandoc \
       texlive texlive-collection-xetex texlive-ec texlive-upquote \
       texlive-adjustbox \
+      wget emacs \
+      bzip2 \
+      tree \
       && yum clean all
 # Python 3.6, tkinter, and git: install from SCL
 RUN  yum -y install centos-release-scl && \
      yum-config-manager --enable rhel-server-rhscl-7-rpms && \
      yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
-       rh-python36 \
+       rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
+       rh-python36-PyYAML \
      && yum clean all
 
 RUN  cd /tmp && \
@@ -37,6 +41,7 @@ RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade virtualenv virtualenvwrapper \
       ipykernel \
       pipenv \
+      nbdime \
       nbval \
       numpy \
       scipy \
@@ -48,9 +53,7 @@ RUN  source scl_source enable rh-python36 && \
       pypandoc \
       bokeh \
       seaborn \
-      pyqtgraph
-
-#nbdime \
+      kaggle
       
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install \
@@ -61,11 +64,8 @@ RUN  source scl_source enable rh-python36 && \
         https://github.com/jupyterhub/nbserverproxy/zipball/master
 RUN  git ls-remote https://github.com/jupyterlab/jupyterlab.git master | \
        awk '{print $1}' > /root/jupyterlab.commit
-#RUN  source scl_source enable rh-python36 && \
-#      python3 $(which nbdime) config-git --enable --system
-      
-#RUN  source scl_source enable rh-python36 && \
-#      python3 -m ipykernel install --name 'SLAC_Stack'
+RUN  source scl_source enable rh-python36 && \
+      python3 $(which nbdime) config-git --enable --system
 
 RUN source scl_source enable rh-python36 && \
       pip3  --no-cache-dir install \
@@ -74,9 +74,8 @@ RUN source scl_source enable rh-python36 && \
       pip3  --no-cache-dir install \
         https://github.com/ioam/holoviews/zipball/master \
         https://github.com/bokeh/datashader/zipball/master
-
-#ENV  SVXT="jupyterlab nbserverproxy nbdime"
-ENV  SVXT="jupyterlab nbserverproxy"
+      
+ENV  SVXT="jupyterlab nbserverproxy nbdime"
 RUN  source scl_source enable rh-python36 && \
        for s in $SVXT; do \
           jupyter serverextension enable ${s} --py --sys-prefix ; \
@@ -94,29 +93,45 @@ RUN  source scl_source enable rh-python36 && \
 
 ENV  LBXT="@jupyter-widgets/jupyterlab-manager"
 RUN  source scl_source enable rh-python36 && \
-       for l in $LBXT; do \
-          jupyter labextension install ${l} --no-build; \
-          python3 $(which jupyter) labextension install ${l} --no-build; \
-       done
+      for l in $LBXT; do \
+         jupyter labextension install ${l} --no-build; \
+         python3 $(which jupyter) labextension install ${l} --no-build; \
+      done
 
 ENV  GITXT="jupyterlab-hub jupyterlab-savequit jupyterlab_bokeh"
-RUN  mkdir -p /usr/share/git && \
+RUN  source scl_source enable rh-python36 && \
+      mkdir -p /usr/share/git && \
       cd /usr/share/git && \
-      source scl_source enable rh-python36 && \
-        jlpm global add webpack && \
+      jlpm global add webpack && \
       git clone https://github.com/jupyterhub/jupyterlab-hub.git && \
       git clone https://github.com/lsst-sqre/jupyterlab-savequit && \
       git clone https://github.com/bokeh/jupyterlab_bokeh.git && \
       for i in ${GITXT}; do \
           cd ${i} && \
-          source scl_source enable rh-python36 && \
-            python3 $(which jupyter) labextension link . --no-build && \
-          source scl_source enable rh-python36 && \
-            jlpm install --unsafe-perm && \
-          source scl_source enable rh-python36 && \
-            jlpm run build && \
+          python3 $(which jupyter) labextension link . --no-build && \
+          jlpm install --unsafe-perm && \
+          jlpm run build && \
           cd .. ;\
       done
+
+RUN  source scl_source enable rh-python36 && \
+     pip3  --no-cache-dir  install --upgrade pip \
+      gsutil \
+      zmq \
+      pygments \
+      humanize \
+      tqdm \
+      cython \
+      gputil \
+      psutil \
+      scikit-image \
+      Pillow \
+      opencv-python \
+      scikit-learn \
+      tensorflow-gpu \
+      tensorboard \
+      keras \
+      torch torchvision
 
 ENV  jl=/opt/slac/jupyterlab
 RUN  mkdir -p ${jl}
@@ -132,28 +147,11 @@ RUN  source scl_source enable rh-python36 && \
 RUN  source scl_source enable rh-python36 && \
       jupyter lab build
 
-
-# frameworks
 RUN  source scl_source enable rh-python36 && \
-       pip3  --no-cache-dir  install --upgrade pip \
-        zmq \
-        Scrapy \
-        pygments \
-        humanize \
-        tqdm \
-        cython \
-        gputil \
-        psutil \
-        scikit-image \
-        Pillow \
-        opencv-python \
-        scikit-learn \
-        tensorflow-gpu \
-        tensorboard \
-        keras \
-        torch torchvision \
-        nltk \
-        statsmodels 
+    for l in ${LBXT} ${GITXT}; do \
+        jupyter labextension enable ${l} && \
+        python3 $(which jupyter) labextension enable ${l}; \
+    done
 
 # Lab extensions require write permissions by running user.
 RUN  groupadd -g 768 jupyter && \
@@ -183,8 +181,12 @@ RUN  cd /etc/profile.d && \
 RUN  for i in notebooks idleculler ; do \
         mkdir -p /etc/skel/${i} ; \
      done	
+
+RUN  source scl_source enable rh-python36 && \
+      python3 -m ipykernel install --name 'SLAC_Stack'
 COPY slac_kernel_py3.json \
-       /usr/local/share/jupyter/kernels/slac_stack/kernel.json
+      /usr/local/share/jupyter/kernels/slac_stack/kernel.json
+
 COPY motd /etc/motd
 COPY jupyter_notebook_config.json /usr/etc/jupyter
 COPY 20_jupytervars /etc/sudoers.d/
