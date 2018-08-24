@@ -6,7 +6,7 @@ RUN  yum repolist
 RUN  yum -y upgrade
 RUN  yum -y install gcc \
       git bazel sudo \
-      python-devel http-parser nodejs \
+      python-devel http-parser nodejs perl-Digest-MD5 \
       make zlib-devel perl-ExtUtils-MakeMaker gettext \
       gcc openssl-devel libffi-devel \
       pandoc \
@@ -15,7 +15,12 @@ RUN  yum -y install gcc \
       wget emacs \
       bzip2 \
       tree \
+      ack screen tmux \
+      vim-enhanced emacs-nox \
+      libarchive-devel \
+      fuse-sshfs \
       && yum clean all
+
 # Python 3.6, tkinter, and git: install from SCL
 RUN  yum -y install centos-release-scl && \
      yum-config-manager --enable rhel-server-rhscl-7-rpms && \
@@ -35,26 +40,58 @@ RUN  cd /tmp && \
      install -m 0755 ${FN}/bin/hub /usr/bin && \
      rm -rf ${F} ${FN}
 
+# install singularity
+RUN version=2.5.2 && curl -L https://github.com/singularityware/singularity/releases/download/$version/singularity-$version.tar.gz | tar xfz - && \
+     cd singularity-$version && \
+     ./configure --prefix=/usr/local --sysconfdir=/etc && \
+     make && make install
+
+# pip etc
 RUN  source scl_source enable rh-python36 && \
-      pip3  --no-cache-dir  install --upgrade pip setuptools
+      pip3  --no-cache-dir  install --upgrade pip setuptools==39.1.0 wheel
 RUN  source scl_source enable rh-python36 && \
-      pip3  --no-cache-dir  install --upgrade virtualenv virtualenvwrapper \
-      ipykernel \
-      pipenv \
-      nbdime \
-      nbval \
-      numpy \
-      scipy \
-      pandas \
-      pypandoc \
-      ipywidgets \
-      rise \
-      matplotlib \
-      pypandoc \
-      bokeh \
-      seaborn \
-      kaggle
-      
+      pip3  --no-cache-dir  install --upgrade \
+        virtualenv \
+        virtualenvwrapper \
+        ipykernel \
+        pipenv \
+        nbdime \
+        nbval \
+        numpy==1.14.5 \
+        scipy \
+        pandas \
+        pypandoc \
+        ipywidgets \
+        rise \
+        matplotlib \
+        pypandoc \
+        bokeh \
+        seaborn \
+        wordcloud \
+        textblob \
+        nltk \
+        kaggle \
+        h5py \
+        mat4py \
+        gsutil \
+        zmq \
+        pygments \
+        humanize \
+        tqdm \
+        cython \
+        gputil \
+        psutil \
+        scikit-image \
+        Pillow \
+        opencv-python \
+        scikit-learn \
+        tensorflow-gpu \
+        tensorboard \
+        keras \
+        torch \
+        torchvision
+
+# build jupyterlab
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install \
         https://github.com/jupyterlab/jupyterlab/zipball/master \
@@ -114,25 +151,7 @@ RUN  source scl_source enable rh-python36 && \
           cd .. ;\
       done
 
-RUN  source scl_source enable rh-python36 && \
-     pip3  --no-cache-dir  install --upgrade pip \
-      gsutil \
-      zmq \
-      pygments \
-      humanize \
-      tqdm \
-      cython \
-      gputil \
-      psutil \
-      scikit-image \
-      Pillow \
-      opencv-python \
-      scikit-learn \
-      tensorflow-gpu \
-      tensorboard \
-      keras \
-      torch torchvision
-
+# build jupyterlab
 ENV  jl=/opt/slac/jupyterlab
 RUN  mkdir -p ${jl}
 
