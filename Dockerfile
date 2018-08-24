@@ -19,6 +19,7 @@ RUN  yum -y install gcc \
       vim-enhanced emacs-nox \
       libarchive-devel \
       fuse-sshfs \
+      jq \
       && yum clean all
 
 # Python 3.6, tkinter, and git: install from SCL
