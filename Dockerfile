@@ -4,6 +4,15 @@ USER root
 RUN  yum install -y epel-release
 RUN  yum repolist
 RUN  yum -y upgrade
+
+# Python 3.6, tkinter, and git: install from SCL
+RUN  yum -y install centos-release-scl && \
+     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+     yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
+       rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
+       rh-python36-PyYAML \
+     && yum clean all
+     
 RUN  yum -y install gcc \
       git bazel sudo \
       python-devel http-parser nodejs perl-Digest-MD5 \
@@ -13,7 +22,7 @@ RUN  yum -y install gcc \
       texlive texlive-collection-xetex texlive-ec texlive-upquote \
       texlive-adjustbox \
       wget emacs \
-      bzip2 \
+      bzip2 zip unzip lrzip \
       tree \
       ack screen tmux \
       vim-enhanced emacs-nox \
@@ -21,14 +30,6 @@ RUN  yum -y install gcc \
       fuse-sshfs \
       jq \
       && yum clean all
-
-# Python 3.6, tkinter, and git: install from SCL
-RUN  yum -y install centos-release-scl && \
-     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
-     yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
-       rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
-       rh-python36-PyYAML \
-     && yum clean all
 
 RUN  cd /tmp && \
      V="2.2.9" && \
