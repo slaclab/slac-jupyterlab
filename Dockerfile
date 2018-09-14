@@ -29,6 +29,7 @@ RUN  yum -y install gcc \
       libarchive-devel \
       fuse-sshfs \
       jq \
+      singularity \
       && yum clean all
 
 RUN  cd /tmp && \
@@ -41,12 +42,6 @@ RUN  cd /tmp && \
      tar xpfz ${F} && \
      install -m 0755 ${FN}/bin/hub /usr/bin && \
      rm -rf ${F} ${FN}
-
-# install singularity
-RUN version=2.5.2 && curl -L https://github.com/singularityware/singularity/releases/download/$version/singularity-$version.tar.gz | tar xfz - && \
-     cd singularity-$version && \
-     ./configure --prefix=/usr/local --sysconfdir=/etc && \
-     make && make install
 
 # pip etc
 RUN  source scl_source enable rh-python36 && \
