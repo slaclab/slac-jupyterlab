@@ -82,6 +82,7 @@ RUN  source scl_source enable rh-python36 && \
         Pillow \
         opencv-python \
         scikit-learn \
+        Theano \
         tensorflow-gpu \
         tensorboard \
         keras \
