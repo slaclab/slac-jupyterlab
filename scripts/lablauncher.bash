@@ -43,14 +43,20 @@ function make_user() {
 	done
     fi
     homedir="${HOMEDIRS}/${U_NAME}"
+    # makdir home
+    echo mkdir -p ${homedir}
+    mkdir -p ${homedir}
     makedir="-m"
     if [ -e "${homedir}" ]; then
 	makedir="-M"
     fi
-    #echo adduser ${U_NAME} -d ${homedir} -c '' -N -g ${gid} ${nuid} \
-    #  ${suppgrp} ${makedir} -s ${DEFAULT_SHELL}
+    echo adduser ${U_NAME} -d ${homedir} -c '' -N -g ${gid} ${nuid} \
+      ${suppgrp} ${makedir} -s ${DEFAULT_SHELL}
     adduser ${U_NAME} -d ${homedir} -c '' -N -g ${gid} ${nuid} \
       ${suppgrp} ${makedir} -s ${DEFAULT_SHELL}
+    echo 'done adduser'
+    echo chown ${U_NAME} ${homedir}
+    chown ${U_NAME} ${homedir}
 }
 
 function add_groups() {
@@ -137,6 +143,9 @@ function change_staging_id() {
     for i in package.json index.js webpack.config.js; do
 	chown ${U_NAME} "${stagedir}/${i}"
     done
+    echo chown -R ${U_NAME} /opt/rh/rh-python36/root/usr/share/jupyter/lab/staging
+    chown -R ${U_NAME} /opt/rh/rh-python36/root/usr/share/jupyter/lab/staging
+
 }
 
 ## Begin mainline code. ##
