@@ -21,14 +21,20 @@ sync
 # Create standard dirs
 ###
 cd ${HOME}
-
-###
-# idleculler
-###
 for i in notebooks idleculler; do
     mkdir -p "${HOME}/${i}"
 done
+
+###
+# allow custom post scripts
+if [ -f /opt/slac/jupyterlab/post-hook.sh ]; then
+  sh /opt/slac/jupyterlab/post-hook.sh
+fi
+
+### 
+###
 # Run idle culler.
+###
 if [ -n "${JUPYTERLAB_IDLE_TIMEOUT}" ] && \
        [ "${JUPYTERLAB_IDLE_TIMEOUT}" -gt 0 ]; then
     touch ${HOME}/idleculler/culler.output && \

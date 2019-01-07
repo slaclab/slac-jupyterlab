@@ -214,6 +214,7 @@ COPY slac_kernel_py3.json \
       scripts/lablauncher.bash \
       scripts/runlab.sh \
       scripts/prepuller.sh \
+      scripts/post-hook.sh \
       ${jl}/
 RUN chmod ugo+x ${jl}/*
 
