@@ -85,8 +85,6 @@ RUN  source scl_source enable rh-python36 && \
         pypandoc \
         papermill \
         rise \
-        graphviz \
-        matplotlib \
         pypandoc \
         pyarrow \
         cloudpickle \
@@ -96,6 +94,7 @@ RUN  source scl_source enable rh-python36 && \
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
         kaggle \
+        fastai \
         nltk \
         h5py \
         mat4py \
@@ -113,6 +112,8 @@ RUN  source scl_source enable rh-python36 && \
 # visualisation libs
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
+        graphviz \
+        matplotlib \
         tables \
         qgrid \
         ipympl \
