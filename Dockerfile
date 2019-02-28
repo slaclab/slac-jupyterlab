@@ -72,6 +72,7 @@ RUN  source scl_source enable rh-python36 && \
         gsutil \
         pygments \
         humanize \
+        pypandoc \
         jupyterlab-git \
         jupyterlab_latex
 
@@ -82,12 +83,9 @@ RUN  source scl_source enable rh-python36 && \
         scipy \
         pandas \
         uproot \
-        pypandoc \
         papermill \
         numba \
-        rise \
         pypandoc \
-        cloudpickle \
         mrcfile
 
 # machine learning libs
@@ -112,6 +110,7 @@ RUN  source scl_source enable rh-python36 && \
 # visualisation libs
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
+        rise \
         graphviz \
         matplotlib \
         tables \
@@ -127,7 +126,6 @@ RUN  source scl_source enable rh-python36 && \
         textblob \
         nglview \
         gmaps
-         
 
 # compute and transport
 RUN  source scl_source enable rh-python36 && \
@@ -136,6 +134,7 @@ RUN  source scl_source enable rh-python36 && \
         dask-kubernetes \
         fastparquet \
         pyarrow \
+        cloudpickle \
         firefly_client \
         zmq
       
