@@ -84,9 +84,9 @@ RUN  source scl_source enable rh-python36 && \
         uproot \
         pypandoc \
         papermill \
+        numba \
         rise \
         pypandoc \
-        pyarrow \
         cloudpickle \
         mrcfile
 
@@ -135,6 +135,7 @@ RUN  source scl_source enable rh-python36 && \
         "dask[complete]" \
         dask-kubernetes \
         fastparquet \
+        pyarrow \
         firefly_client \
         zmq
       
