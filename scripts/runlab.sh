@@ -2,7 +2,7 @@
 
 # Set DEBUG to a non-empty value to turn on debugging
 if [ -n "${DEBUG}" ]; then
-    set -x
+  set -x
 fi
 
 ###
@@ -13,16 +13,16 @@ source /etc/profile.d/local06-scl.sh
 ###
 # Rebuild Lab
 ###
-jupyter lab clean 2>&1 >/dev/null
-jupyter lab build 2>&1 >/dev/null
-sync
+# jupyter lab clean 2>&1 >/dev/null
+# jupyter lab build 2>&1 >/dev/null
+# sync
 
 ###
 # Create standard dirs
 ###
 cd ${HOME}
 for i in notebooks idleculler; do
-    mkdir -p "${HOME}/${i}"
+  mkdir -p "${HOME}/${i}"
 done
 
 ###
@@ -31,15 +31,14 @@ if [ -f /opt/slac/jupyterlab/post-hook.sh ]; then
   sh /opt/slac/jupyterlab/post-hook.sh
 fi
 
-### 
 ###
 # Run idle culler.
 ###
 if [ -n "${JUPYTERLAB_IDLE_TIMEOUT}" ] && \
        [ "${JUPYTERLAB_IDLE_TIMEOUT}" -gt 0 ]; then
-    touch ${HOME}/idleculler/culler.output && \
-	nohup python3 /opt/slac/jupyterlab/selfculler.py >> \
-              ${HOME}/idleculler/culler.output 2>&1 &
+  touch ${HOME}/idleculler/culler.output && \
+  nohup python3 /opt/slac/jupyterlab/selfculler.py >> \
+  ${HOME}/idleculler/culler.output 2>&1 &
 fi
 
 ###
@@ -54,14 +53,14 @@ if [ -n "${DEBUG}" ]; then
 fi
 echo "JupyterLab command: '${cmd}'"
 if [ -n "${DEBUG}" ]; then
-    # Spin while waiting for interactive container use.
-    while : ; do
-	${cmd}
-        d=$(date)
-        echo "${d}: sleeping."
-        sleep 60
-    done
+  # Spin while waiting for interactive container use.
+  while : ; do
+    ${cmd}
+    d=$(date)
+    echo "${d}: sleeping."
+    sleep 60
+  done
 else
-    # Start Lab
-    exec ${cmd}
+  # Start Lab
+  exec ${cmd}
 fi
