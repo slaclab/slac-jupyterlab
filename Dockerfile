@@ -33,51 +33,72 @@ RUN  yum -y install gcc \
       && yum clean all
 
 RUN  cd /tmp && \
-     V="2.2.9" && \
-     FN="hub-linux-amd64-${V}" && \
-     F="${FN}.tgz" && \
-     URL="https://github.com/github/hub/releases/download/v${V}/${F}" && \
-     cmd="curl -L ${URL} -o ${F}" && \
-     $cmd && \
-     tar xpfz ${F} && \
-     install -m 0755 ${FN}/bin/hub /usr/bin && \
-     rm -rf ${F} ${FN}
+      V="2.10.0" && \
+      FN="hub-linux-amd64-${V}" && \
+      F="${FN}.tgz" && \
+      URL="https://github.com/github/hub/releases/download/v${V}/${F}" && \
+      cmd="curl -L ${URL} -o ${F}" && \
+      $cmd && \
+      tar xpfz ${F} && \
+      install -m 0755 ${FN}/bin/hub /usr/bin && \
+      rm -rf ${F} ${FN}
 
 # pip etc
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade pip setuptools==39.1.0 wheel
+
+# base libraries
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
         virtualenv \
         virtualenvwrapper \
-        ipykernel \
         pipenv \
+        jupyterlab \
+        jupyterlab_server \
+        jupyterhub \
+        jupyter-server-proxy \
+        jupyterlabutils \
+        jupyter-firefly-extensions \
+        ipykernel \
         nbdime \
         nbval \
-        numpy==1.14.5 \
-        scipy \
-        pandas \
-        pypandoc \
+        ipyevents \
         ipywidgets \
-        rise \
-        matplotlib \
-        pypandoc \
-        bokeh \
-        seaborn \
-        wordcloud \
-        textblob \
-        nltk \
-        kaggle \
-        h5py \
-        mat4py \
-        gsutil \
-        zmq \
-        pygments \
-        humanize \
         tqdm \
+        paramnb \
         cython \
         gputil \
         psutil \
+        gsutil \
+        pygments \
+        humanize \
+        jupyterlab-git \
+        jupyterlab_latex
+
+# data libraries
+RUN  source scl_source enable rh-python36 && \
+      pip3  --no-cache-dir  install --upgrade \
+        numpy==1.14.5 \
+        scipy \
+        pandas \
+        uproot \
+        pypandoc \
+        papermill \
+        rise \
+        graphviz \
+        matplotlib \
+        pypandoc \
+        pyarrow \
+        cloudpickle \
+        mrcfile
+
+# machine learning libs
+RUN  source scl_source enable rh-python36 && \
+      pip3  --no-cache-dir  install --upgrade \
+        kaggle \
+        nltk \
+        h5py \
+        mat4py \
         scikit-image \
         Pillow \
         opencv-python \
@@ -88,101 +109,92 @@ RUN  source scl_source enable rh-python36 && \
         keras \
         torch \
         torchvision
-
-# build jupyterlab
+        
+# visualisation libs
 RUN  source scl_source enable rh-python36 && \
-      pip3  --no-cache-dir  install \
-        https://github.com/jupyterlab/jupyterlab/zipball/master \
-        https://github.com/jupyterlab/jupyterlab_launcher/zipball/master \
-        https://github.com/jupyter/notebook/zipball/master \
-        https://github.com/jupyterhub/jupyterhub/zipball/master \
-        https://github.com/jupyterhub/nbserverproxy/zipball/master
-RUN  git ls-remote https://github.com/jupyterlab/jupyterlab.git master | \
-       awk '{print $1}' > /root/jupyterlab.commit
-RUN  source scl_source enable rh-python36 && \
-      python3 $(which nbdime) config-git --enable --system
+      pip3  --no-cache-dir  install --upgrade \
+        tables \
+        qgrid \
+        ipympl \
+        bokeh \
+        seaborn \
+        bqplot \
+        ipyvolume \
+        "holoviews[recommended]" \
+        datashader \
+        wordcloud \
+        textblob \
+        nglview \
+        gmaps
+         
 
-RUN source scl_source enable rh-python36 && \
-      pip3  --no-cache-dir install \
-        https://github.com/ioam/holoviews/zipball/master \
-        https://github.com/bokeh/datashader/zipball/master && \
-      pip3  --no-cache-dir install \
-        https://github.com/ioam/holoviews/zipball/master \
-        https://github.com/bokeh/datashader/zipball/master
+# compute and transport
+RUN  source scl_source enable rh-python36 && \
+      pip3  --no-cache-dir  install --upgrade \
+        "dask[complete]" \
+        dask-kubernetes \
+        fastparquet \
+        firefly_client \
+        zmq
       
-ENV  SVXT="jupyterlab nbserverproxy nbdime"
-RUN  source scl_source enable rh-python36 && \
-       for s in $SVXT; do \
-          jupyter serverextension enable ${s} --py --sys-prefix ; \
-          python3 $(which jupyter) serverextension enable ${s} --py --sys-prefix ; \
-       done
-
-ENV  NBXT="widgetsnbextension rise"
-RUN  source scl_source enable rh-python36 && \
-       for n in $NBXT; do \
-          jupyter nbextension install ${n} --py --sys-prefix ; \
-          jupyter nbextension enable ${n} --py  --sys-prefix ; \
-          python3 $(which jupyter) nbextension install ${n} --py --sys-prefix ; \
-          python3 $(which jupyter) nbextension enable ${n} --py --sys-prefix ; \
-       done
-
-ENV  LBXT="@jupyter-widgets/jupyterlab-manager"
-RUN  source scl_source enable rh-python36 && \
-      for l in $LBXT; do \
-         jupyter labextension install ${l} --no-build; \
-         python3 $(which jupyter) labextension install ${l} --no-build; \
+RUN  server_extensions="jupyterlab \
+        jupyter_server_proxy \
+        nbdime \
+        jupyterlab_latex \
+        jupyterlab_git" && \
+      source scl_source enable rh-python36 && \
+      set -e && \
+      for s in ${server_extensions}; do \
+        jupyter serverextension enable ${s} --py --sys-prefix; \
+      done
+      
+RUN  notebook_extensions="widgetsnbextension \
+        ipyevents \
+        nbdime \
+        rise \
+        qgrid \
+        nglview" && \
+      source scl_source enable rh-python36 && \
+      set -e && \
+      for n in ${notebook_extensions}; do \
+        jupyter nbextension install ${n} --py --sys-prefix; \
+        jupyter nbextension enable ${n} --py  --sys-prefix; \
       done
 
-ENV  GITXT="jupyterlab-hub jupyterlab-savequit jupyterlab_bokeh"
-RUN  source scl_source enable rh-python36 && \
-      mkdir -p /usr/share/git && \
-      cd /usr/share/git && \
-      jlpm global add webpack && \
-      git clone https://github.com/jupyterhub/jupyterlab-hub.git && \
-      git clone https://github.com/lsst-sqre/jupyterlab-savequit && \
-      git clone https://github.com/bokeh/jupyterlab_bokeh.git && \
-      for i in ${GITXT}; do \
-          cd ${i} && \
-          python3 $(which jupyter) labextension link . --no-build && \
-          jlpm install --unsafe-perm && \
-          jlpm run build && \
-          cd .. ;\
+RUN  lab_extensions="@jupyterlab/celltags \
+        @jupyterlab/toc \
+        @krassowski/jupyterlab_go_to_definition \
+        @jupyter-widgets/jupyterlab-manager \
+        jupyterlab-server-proxy \
+        @lsst-sqre/jupyterlab-savequit \
+        @pyviz/jupyterlab_pyviz \
+        bqplot \
+        dask-labextension \
+        ipyevents \
+        ipyvolume \
+        jupyter-threejs \
+        jupyterlab_bokeh \
+        nbdime-jupyterlab \
+        jupyter_firefly_extensions \
+        @jupyterlab/latex \
+        jupyterlab-drawio \
+        @jupyterlab/git \
+        @jupyterlab/google-drive \
+        @lckr/jupyterlab_variableinspector \
+        @jupyterlab/hub-extension" && \
+      source scl_source enable rh-python36 && \
+      set -e && \
+      for l in ${lab_extensions}; do \
+        jupyter labextension install ${l} --no-build; \
+        jupyter labextension enable ${l} ; \
       done
 
-# build jupyterlab
-ENV  jl=/opt/slac/jupyterlab
-RUN  mkdir -p ${jl}
-
-RUN  for i in clean build; do \
-       source scl_source enable rh-python36 && \
-          jupyter lab ${i} ; \
-     done
-
+ENV  NODE_OPTIONS=--max-old-space-size=4096
 RUN  source scl_source enable rh-python36 && \
-      jupyter labextension install jupyterlab_bokeh && \
-      python3 $(which jupyter) labextension install jupyterlab_bokeh
-RUN  source scl_source enable rh-python36 && \
+      npm cache clean && \
+      jupyter lab clean && \
       jupyter lab build
 
-RUN  source scl_source enable rh-python36 && \
-    for l in ${LBXT} ${GITXT}; do \
-        jupyter labextension enable ${l} && \
-        python3 $(which jupyter) labextension enable ${l}; \
-    done
-
-# Lab extensions require write permissions by running user.
-RUN  groupadd -g 768 jupyter && \
-     scl="/opt/rh/rh-python36/root/usr/share/" && \
-     jl="jupyter/lab" && \
-     u="${scl}/${jl}" && \
-# If we recursively chown all of the lab directory, it gets rid of permission
-# errors on startup....but also radically slows down startup, by about
-# three minutes.
-     mkdir -p ${u}/staging ${u}/schemas ${u}/themes && \
-     for i in /usr/share/git ${u}/staging; do \
-         chgrp -R jupyter ${i} ; \
-         chmod -R g+w ${i} ; \
-     done
 # Custom local files
 COPY profile.d/local03-showmotd.sh \
       profile.d/local04-pythonrc.sh \
@@ -199,25 +211,19 @@ RUN  for i in notebooks idleculler ; do \
         mkdir -p /etc/skel/${i} ; \
      done	
 
-RUN  source scl_source enable rh-python36 && \
-      python3 -m ipykernel install --name 'SLAC_Stack'
-COPY slac_kernel_py3.json \
-      /usr/local/share/jupyter/kernels/slac_stack/kernel.json
-
 COPY motd /etc/motd
 COPY jupyter_notebook_config.json /usr/etc/jupyter
 COPY 20_jupytervars /etc/sudoers.d/
 COPY pythonrc /etc/skel/.pythonrc
-COPY slac_kernel_py3.json \
-      scripts/selfculler.py \
+COPY scripts/selfculler.py \
       scripts/launch.bash \
       scripts/lablauncher.bash \
       scripts/runlab.sh \
       scripts/prepuller.sh \
       scripts/post-hook.sh \
-      ${jl}/
-RUN chmod ugo+x ${jl}/*
+      /opt/slac/jupyterlab/
 
 ENV  LANG=C.UTF-8
 WORKDIR /tmp
 CMD [ "/opt/slac/jupyterlab/lablauncher.bash" ]
+
