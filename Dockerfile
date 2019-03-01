@@ -32,6 +32,23 @@ RUN  yum -y install gcc \
       singularity \
       && yum clean all
 
+###
+# install mpi
+###
+RUN  yum -y groupinstall "Development Tools" && \
+      yum clean all && \
+      mkdir /tmp/git && cd /tmp/git && \
+      git clone https://github.com/open-mpi/ompi.git && \
+      cd ompi && \
+      git checkout v4.0.0 && \
+      ./autogen.pl && \
+      ./configure --prefix=/usr/local && \
+      make && \
+      make install && \
+      /usr/local/bin/mpicc examples/ring_c.c -o /usr/bin/mpi_ring && \
+      rm -rf /tmp/git
+
+
 RUN  cd /tmp && \
       V="2.10.0" && \
       FN="hub-linux-amd64-${V}" && \
@@ -136,6 +153,7 @@ RUN  source scl_source enable rh-python36 && \
         pyarrow \
         cloudpickle \
         firefly_client \
+        horovod \
         zmq
       
 RUN  server_extensions="jupyterlab \
