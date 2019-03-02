@@ -173,6 +173,7 @@ RUN  notebook_extensions="widgetsnbextension \
       done
 
 RUN  lab_extensions="@jupyterlab/celltags \
+        @enlznep/runall-extension \
         @jupyterlab/toc \
         jupyterlab-spreadsheet \
         @krassowski/jupyterlab_go_to_definition \
