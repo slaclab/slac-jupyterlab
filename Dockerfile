@@ -142,6 +142,8 @@ RUN  source scl_source enable rh-python36 && \
         pyarrow \
         cloudpickle \
         firefly_client \
+        mpi4py \
+        ipyparallel \
         horovod \
         zmq
       
@@ -149,7 +151,8 @@ RUN  server_extensions="jupyterlab \
         jupyter_server_proxy \
         nbdime \
         jupyterlab_latex \
-        jupyterlab_git" && \
+        jupyterlab_git \
+        ipyparallel" && \
       source scl_source enable rh-python36 && \
       set -e && \
       for s in ${server_extensions}; do \
@@ -161,7 +164,8 @@ RUN  notebook_extensions="widgetsnbextension \
         nbdime \
         rise \
         qgrid \
-        nglview" && \
+        nglview \
+        ipyparallel" && \
       source scl_source enable rh-python36 && \
       set -e && \
       for n in ${notebook_extensions}; do \
