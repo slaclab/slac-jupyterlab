@@ -89,6 +89,7 @@ RUN  source scl_source enable rh-python36 && \
         icc-rt \
         numba \
         pypandoc \
+        pytraj \
         mrcfile
 
 # machine learning libs
