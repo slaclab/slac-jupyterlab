@@ -107,6 +107,7 @@ RUN  source scl_source enable rh-python36 && \
         Theano \
         tensorflow-gpu \
         tensorboard \
+        jupyter-tensorboard \
         keras \
         torch \
         torchvision
@@ -191,6 +192,7 @@ RUN  lab_extensions="@jupyterlab/celltags \
         @jupyterlab/git \
         @jupyterlab/google-drive \
         @lckr/jupyterlab_variableinspector \
+        jupyterlab_tensorboard \
         @jupyterlab/hub-extension" && \
       source scl_source enable rh-python36 && \
       set -e && \
