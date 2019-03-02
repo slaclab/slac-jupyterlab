@@ -43,7 +43,7 @@ RUN  yum -y groupinstall "Development Tools" && \
       git checkout v4.0.0 && \
       ./autogen.pl && \
       ./configure --prefix=/usr/local && \
-      make && \
+      make -j 16 && \
       make install && \
       /usr/local/bin/mpicc examples/ring_c.c -o /usr/bin/mpi_ring && \
       rm -rf /tmp/git
