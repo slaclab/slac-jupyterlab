@@ -1,36 +1,31 @@
 FROM nvidia/cuda:9.0-cudnn7-runtime-centos7
 
 USER root
-RUN  yum install -y epel-release
-RUN  yum repolist
-RUN  yum -y upgrade
+RUN   yum install -y epel-release \
+        && yum repolist \
+        && yum -y upgrade
 
-# Python 3.6, tkinter, and git: install from SCL
-RUN  yum -y install centos-release-scl && \
-     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
-     yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
-       rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
-       rh-python36-PyYAML \
-     && yum clean all
-     
-RUN  yum -y install gcc \
-      git bazel sudo \
-      python-devel http-parser nodejs perl-Digest-MD5 \
-      make zlib-devel perl-ExtUtils-MakeMaker gettext \
-      gcc openssl-devel libffi-devel \
-      pandoc \
-      texlive texlive-collection-xetex texlive-ec texlive-upquote \
-      texlive-adjustbox \
-      wget emacs \
-      bzip2 zip unzip lrzip \
-      tree \
-      ack screen tmux \
-      vim-enhanced emacs-nox \
-      libarchive-devel \
-      fuse-sshfs \
-      jq \
-      singularity \
-      && yum clean all
+RUN   yum -y install centos-release-scl && \
+      yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+      yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
+        rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
+        rh-python36-PyYAML \
+        git bazel sudo \
+        python-devel http-parser nodejs perl-Digest-MD5 \
+        make zlib-devel perl-ExtUtils-MakeMaker gettext \
+        gcc openssl-devel libffi-devel \
+        pandoc \
+        texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \
+        wget \
+        bzip2 zip unzip lrzip \
+        tree \
+        ack screen tmux \
+        vim-enhanced emacs emacs-nox \
+        libarchive-devel \
+        fuse-sshfs \
+        jq \
+        singularity \
+        && yum clean all
 
 ###
 # install mpi
