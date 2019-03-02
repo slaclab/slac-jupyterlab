@@ -48,18 +48,6 @@ RUN  yum -y groupinstall "Development Tools" && \
       /usr/local/bin/mpicc examples/ring_c.c -o /usr/bin/mpi_ring && \
       rm -rf /tmp/git
 
-
-RUN  cd /tmp && \
-      V="2.10.0" && \
-      FN="hub-linux-amd64-${V}" && \
-      F="${FN}.tgz" && \
-      URL="https://github.com/github/hub/releases/download/v${V}/${F}" && \
-      cmd="curl -L ${URL} -o ${F}" && \
-      $cmd && \
-      tar xpfz ${F} && \
-      install -m 0755 ${FN}/bin/hub /usr/bin && \
-      rm -rf ${F} ${FN}
-
 # pip etc
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade pip setuptools==39.1.0 wheel
