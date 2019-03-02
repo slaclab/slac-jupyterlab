@@ -125,6 +125,7 @@ RUN  source scl_source enable rh-python36 && \
         seaborn \
         bqplot \
         ipyvolume \
+        pyviz \
         "holoviews[recommended]" \
         datashader \
         wordcloud \
@@ -186,6 +187,7 @@ RUN  lab_extensions="@jupyterlab/celltags \
         ipyevents \
         ipyvolume \
         jupyter-threejs \
+        jupyter-matplotlib \
         jupyterlab_bokeh \
         nbdime-jupyterlab \
         jupyter_firefly_extensions \
