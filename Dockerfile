@@ -90,6 +90,8 @@ RUN  source scl_source enable rh-python36 && \
         pandas \
         uproot \
         papermill \
+        tbb \
+        icc-rt \
         numba \
         pypandoc \
         mrcfile
