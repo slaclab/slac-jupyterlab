@@ -174,6 +174,7 @@ RUN  notebook_extensions="widgetsnbextension \
 
 RUN  lab_extensions="@jupyterlab/celltags \
         @jupyterlab/toc \
+        jupyterlab-spreadsheet \
         @krassowski/jupyterlab_go_to_definition \
         @jupyter-widgets/jupyterlab-manager \
         jupyterlab-server-proxy \
