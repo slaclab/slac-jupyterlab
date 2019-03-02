@@ -70,6 +70,7 @@ RUN  source scl_source enable rh-python36 && \
         virtualenv \
         virtualenvwrapper \
         pipenv \
+        tornado==5.1.1 \
         jupyterlab \
         jupyterlab_server \
         jupyterhub \
