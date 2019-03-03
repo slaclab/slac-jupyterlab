@@ -211,7 +211,6 @@ RUN  lab_extensions="@jupyterlab/celltags \
         jupyterlab-drawio \
         @jupyterlab/git \
         @jupyterlab/google-drive \
-        jupyterlab_globus \
         @lckr/jupyterlab_variableinspector \
         jupyterlab_tensorboard \
         @jupyterlab/hub-extension" && \
