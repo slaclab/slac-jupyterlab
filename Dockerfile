@@ -7,23 +7,22 @@ RUN   yum install -y epel-release \
 
 RUN   yum -y install centos-release-scl && \
       yum-config-manager --enable rhel-server-rhscl-7-rpms && \
-      yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
-        rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
-        rh-python36-PyYAML \
+      yum -y install rh-git29 devtoolset-6 \
+        rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 rh-python36-python-tkinter rh-python36-PyYAML \
         git bazel sudo \
         python-devel http-parser nodejs perl-Digest-MD5 \
-        make zlib-devel perl-ExtUtils-MakeMaker gettext \
-        gcc openssl-devel libffi-devel \
+        zlib-devel perl-ExtUtils-MakeMaker gettext \
+        gcc make openssl-devel libffi-devel \
+        graphviz \
         pandoc \
         texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \
-        wget \
+        wget jq \
         bzip2 zip unzip lrzip \
         tree \
         ack screen tmux \
         vim-enhanced emacs emacs-nox \
         libarchive-devel \
         fuse-sshfs \
-        jq \
         singularity \
         geos-devel \
         && yum clean all
@@ -103,6 +102,7 @@ RUN  source scl_source enable rh-python36 && \
         papermill \
         tbb \
         icc-rt \
+        pyculib \
         numba \
         pypandoc \
         pytraj \
