@@ -25,6 +25,7 @@ RUN   yum -y install centos-release-scl && \
         fuse-sshfs \
         jq \
         singularity \
+        geos-devel \
         && yum clean all
 
 ###
@@ -42,6 +43,20 @@ RUN  yum -y groupinstall "Development Tools" && \
       make install && \
       /usr/local/bin/mpicc examples/ring_c.c -o /usr/bin/mpi_ring && \
       rm -rf /tmp/git
+
+###
+# proj for cartopy
+###
+RUN mkdir /tmp/proj4 \
+      && cd /tmp/proj4 \
+      && git clone https://github.com/OSGeo/proj.4.git \
+      && cd /tmp/proj4/proj.4 \
+      && git checkout 4.9.3 \
+      && ./autogen.sh \
+      && ./configure \ 
+      && make -j 16 \
+      && make install \
+      && rm -rf /tmp/proj4
 
 # pip etc
 RUN  source scl_source enable rh-python36 && \
@@ -75,7 +90,8 @@ RUN  source scl_source enable rh-python36 && \
         humanize \
         pypandoc \
         jupyterlab-git \
-        jupyterlab_latex
+        jupyterlab_latex \
+        pyct
 
 # data libraries
 RUN  source scl_source enable rh-python36 && \
