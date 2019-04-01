@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-runtime-centos7
+FROM nvidia/cuda:10.0-cudnn7-runtime-centos7
 
 USER root
 RUN   yum install -y epel-release \
