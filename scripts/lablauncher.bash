@@ -135,6 +135,11 @@ function purge_docker_vars() {
   unset ${purge}
 }
 
+# inject google drive clientid
+if [[ ! -z "${JUPYTERLAB_GOOGLE_OAUTH_CLIENTID}" ]]; then
+  sed -i 's|"default": .*|"default": "'${JUPYTERLAB_GOOGLE_OAUTH_CLIENTID//[$'\t\r\n ']}'"|' '/opt/rh/rh-python36/root/usr/share/jupyter/lab/schemas/@jupyterlab/google-drive/drive.json'
+  cat '/opt/rh/rh-python36/root/usr/share/jupyter/lab/schemas/@jupyterlab/google-drive/drive.json'
+fi
 
 U_NAME="${JUPYTERHUB_USER}"
 HOMEDIRS="/home"
