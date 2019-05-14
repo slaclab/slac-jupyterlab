@@ -9,7 +9,7 @@ RUN   yum -y install centos-release-scl && \
       yum-config-manager --enable rhel-server-rhscl-7-rpms && \
       yum -y install rh-git29 devtoolset-6 \
         rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 rh-python36-python-tkinter rh-python36-PyYAML \
-        git bazel sudo \
+        git bazel \
         python-devel http-parser nodejs perl-Digest-MD5 \
         zlib-devel perl-ExtUtils-MakeMaker gettext \
         gcc make openssl-devel libffi-devel \
@@ -126,7 +126,8 @@ RUN  source scl_source enable rh-python36 && \
         jupyter-tensorboard \
         keras \
         torch \
-        torchvision
+        torchvision \
+        pymc3
         
 # visualisation libs
 RUN  source scl_source enable rh-python36 && \
@@ -152,6 +153,8 @@ RUN  source scl_source enable rh-python36 && \
 # compute and transport
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
+        mkl \
+        mkl-fft \
         "dask[complete]" \
         dask-kubernetes \
         fastparquet \
@@ -161,6 +164,7 @@ RUN  source scl_source enable rh-python36 && \
         mpi4py \
         ipyparallel \
         horovod \
+        deap \
         zmq
       
 RUN  server_extensions="jupyterlab \
@@ -226,6 +230,9 @@ RUN  source scl_source enable rh-python36 && \
       npm cache clean && \
       jupyter lab clean && \
       jupyter lab build
+
+RUN curl -L https://github.com/javabean/su-exec/releases/download/v0.2/su-exec.amd64 > /usr/bin/su-exec \
+    && chmod ugo+x /usr/bin/su-exec
 
 # Custom local files
 COPY profile.d/local03-showmotd.sh \

@@ -54,9 +54,9 @@ function make_user() {
     ${suppgrp} ${makedir} -s ${DEFAULT_SHELL}
   adduser ${U_NAME} -d ${homedir} -c '' -N -g ${gid} ${nuid} \
     ${suppgrp} ${makedir} -s ${DEFAULT_SHELL}
-  echo 'done adduser'
-  echo chown ${U_NAME} ${homedir}
-  chown ${U_NAME} ${homedir}
+  echo chown ${U_NAME}:${gid} ${homedir}
+  chown ${U_NAME}:${gid} ${homedir}
+  U_GID="${gid}"
 }
 
 function add_groups() {
@@ -138,20 +138,23 @@ function purge_docker_vars() {
 # inject google drive clientid
 if [[ ! -z "${JUPYTERLAB_GOOGLE_OAUTH_CLIENTID}" ]]; then
   sed -i 's|"default": .*|"default": "'${JUPYTERLAB_GOOGLE_OAUTH_CLIENTID//[$'\t\r\n ']}'"|' '/opt/rh/rh-python36/root/usr/share/jupyter/lab/schemas/@jupyterlab/google-drive/drive.json'
-  cat '/opt/rh/rh-python36/root/usr/share/jupyter/lab/schemas/@jupyterlab/google-drive/drive.json'
+  # cat '/opt/rh/rh-python36/root/usr/share/jupyter/lab/schemas/@jupyterlab/google-drive/drive.json'
 fi
 
 U_NAME="${JUPYTERHUB_USER}"
 HOMEDIRS="/home"
 DEFAULT_SHELL="/bin/bash"
-sudo=""
+su="exec "
+# drop privs
 if [ $(id -u) -eq 0 ]; then
   if [ -n "${U_NAME}" ]; then
     setup_user
-    sudo="sudo -E -u ${U_NAME} "
+    U_GID=`id -gn ${U_NAME}`
+    su="/usr/bin/su-exec ${U_NAME}:${U_GID}"
   else
-    echo 1>&2 "Warning: running as UID 0"
+    echo 1>&2 "ERROR: Cannot run as UID 0... terminating..."
+    exit 255
   fi
 fi
 forget_extraneous_vars
-exec ${sudo} /opt/slac/jupyterlab/runlab.sh
+${su} /opt/slac/jupyterlab/runlab.sh
