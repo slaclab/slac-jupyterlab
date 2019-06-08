@@ -7,7 +7,7 @@ RUN   yum install -y epel-release \
 
 RUN   yum -y install centos-release-scl && \
       yum-config-manager --enable rhel-server-rhscl-7-rpms && \
-      yum -y install rh-git29 devtoolset-6 \
+      yum -y install rh-git29 devtoolset-6 devtoolset-7 devtoolset-8 \
         rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 rh-python36-python-tkinter rh-python36-PyYAML \
         git bazel \
         python-devel http-parser nodejs perl-Digest-MD5 \
@@ -127,7 +127,9 @@ RUN  source scl_source enable rh-python36 && \
         keras \
         torch \
         torchvision \
-        pymc3
+        pymc3 \
+        pystan \
+        edward
         
 # visualisation libs
 RUN  source scl_source enable rh-python36 && \
