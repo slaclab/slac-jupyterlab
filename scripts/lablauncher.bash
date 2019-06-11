@@ -143,7 +143,7 @@ fi
 
 U_NAME="${JUPYTERHUB_USER}"
 HOMEDIRS="/home"
-DEFAULT_SHELL="/bin/bash"
+DEFAULT_SHELL="/usr/bin/bash"
 su="exec "
 # drop privs
 if [ $(id -u) -eq 0 ]; then

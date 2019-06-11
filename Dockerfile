@@ -20,7 +20,8 @@ RUN   yum -y install centos-release-scl && \
         bzip2 zip unzip lrzip \
         tree \
         ack screen tmux \
-        vim-enhanced emacs emacs-nox \
+        vim-enhanced emacs emacs-nox nano pico \
+        man-pages man-db \
         libarchive-devel \
         fuse-sshfs \
         singularity \
@@ -264,7 +265,11 @@ COPY scripts/selfculler.py \
       scripts/post-hook.sh \
       /opt/slac/jupyterlab/
 
+RUN  ln -sf /opt/lsf/curr/conf/lsf.conf.co /etc/lsf.conf \
+  &&  ln -sf /afs/slac/package/lsf /opt/lsf
+
 ENV  LANG=C.UTF-8
+
 WORKDIR /tmp
 CMD [ "/opt/slac/jupyterlab/lablauncher.bash" ]
 
