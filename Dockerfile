@@ -188,12 +188,13 @@ RUN  notebook_extensions="widgetsnbextension \
         rise \
         qgrid \
         nglview \
+        ipyvolume \
         ipyparallel" && \
       source scl_source enable rh-python36 && \
       set -e && \
       for n in ${notebook_extensions}; do \
-        jupyter nbextension install ${n} --py --sys-prefix; \
-        jupyter nbextension enable ${n} --py  --sys-prefix; \
+        jupyter nbextension install --py --sys-prefix ${n}; \
+        jupyter nbextension enable --py --sys-prefix ${n}; \
       done
 
 RUN  lab_extensions="@jupyterlab/celltags \
@@ -209,6 +210,7 @@ RUN  lab_extensions="@jupyterlab/celltags \
         dask-labextension \
         ipyevents \
         ipyvolume \
+        nglview-js-widgets \
         jupyter-threejs \
         jupyter-matplotlib \
         jupyterlab_bokeh \
@@ -224,7 +226,7 @@ RUN  lab_extensions="@jupyterlab/celltags \
       source scl_source enable rh-python36 && \
       set -e && \
       for l in ${lab_extensions}; do \
-        jupyter labextension install ${l} --no-build; \
+        jupyter labextension install --no-build ${l} ; \
         jupyter labextension enable ${l} ; \
       done
 
