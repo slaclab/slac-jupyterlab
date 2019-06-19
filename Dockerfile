@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.0-cudnn7-runtime-centos7
+FROM nvidia/cuda:10.0-cudnn7-devel-centos7
 
 USER root
 RUN   yum install -y epel-release \
@@ -131,6 +131,10 @@ RUN  source scl_source enable rh-python36 && \
         pymc3 \
         pystan \
         edward
+
+RUN source scl_source enable rh-python36 && \
+      pip3  --no-cache-dir  install --upgrade \
+        torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric 
         
 # visualisation libs
 RUN  source scl_source enable rh-python36 && \
