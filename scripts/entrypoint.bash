@@ -149,8 +149,9 @@ su="exec "
 if [ $(id -u) -eq 0 ]; then
   if [ -n "${U_NAME}" ]; then
     setup_user
-    U_GID=`id -gn ${U_NAME}`
-    su="/usr/bin/su-exec ${U_NAME}:${U_GID}"
+    #U_GID=`id -gn ${U_NAME}`
+    #su="/usr/bin/su-exec ${U_NAME}:${U_GID}"
+    su="sudo -E -u ${U_NAME} "
   else
     echo 1>&2 "ERROR: Cannot run as UID 0... terminating..."
     exit 255

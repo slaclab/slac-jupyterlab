@@ -1,7 +1,8 @@
 FROM nvidia/cuda:10.0-cudnn7-devel-centos7
 
 USER root
-RUN   yum install -y epel-release \
+RUN   curl -sL https://rpm.nodesource.com/setup_10.x | bash - && \
+        yum install -y epel-release \
         && yum repolist \
         && yum -y upgrade
 
@@ -9,10 +10,10 @@ RUN   yum -y install centos-release-scl && \
       yum-config-manager --enable rhel-server-rhscl-7-rpms && \
       yum -y install rh-git29 devtoolset-6 devtoolset-7 devtoolset-8 \
         rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 rh-python36-python-tkinter rh-python36-PyYAML \
-        git bazel \
+        git bazel sudo \
         python-devel http-parser nodejs perl-Digest-MD5 \
         zlib-devel perl-ExtUtils-MakeMaker gettext \
-        gcc make openssl-devel libffi-devel \
+        gcc make openssl-devel libffi-devel automake libtool file \
         graphviz \
         pandoc \
         texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \
@@ -26,6 +27,7 @@ RUN   yum -y install centos-release-scl && \
         fuse-sshfs \
         singularity \
         geos-devel \
+        environment-modules \
         && yum clean all
 
 ###
@@ -62,6 +64,8 @@ RUN mkdir /tmp/proj4 \
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade pip setuptools==39.1.0 wheel
 
+#        jupyter-server-proxy \
+#        nbdime \
 # base libraries
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
@@ -72,11 +76,9 @@ RUN  source scl_source enable rh-python36 && \
         jupyterlab \
         jupyterlab_server \
         jupyterhub \
-        jupyter-server-proxy \
         jupyterlabutils \
         jupyter-firefly-extensions \
         ipykernel \
-        nbdime \
         nbval \
         ipyevents \
         ipywidgets \
@@ -91,6 +93,7 @@ RUN  source scl_source enable rh-python36 && \
         pypandoc \
         jupyterlab-git \
         jupyterlab_latex \
+        numpydoc \
         pyct
 
 # data libraries
@@ -107,6 +110,9 @@ RUN  source scl_source enable rh-python36 && \
         numba \
         pypandoc \
         pytraj \
+        mdtraj \
+        pyemma \
+        ProDy \
         mrcfile
 
 # machine learning libs
@@ -134,7 +140,7 @@ RUN  source scl_source enable rh-python36 && \
 
 RUN source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
-        torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric 
+        torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric  
         
 # visualisation libs
 RUN  source scl_source enable rh-python36 && \
@@ -155,6 +161,8 @@ RUN  source scl_source enable rh-python36 && \
         wordcloud \
         textblob \
         nglview \
+        hyperspy[all] \
+        hyperspy_gui_ipywidgets \
         gmaps
 
 # compute and transport
@@ -174,21 +182,22 @@ RUN  source scl_source enable rh-python36 && \
         deap \
         zmq
       
+#        jupyter_server_proxy \
+#        nbdime \
 RUN  server_extensions="jupyterlab \
-        jupyter_server_proxy \
-        nbdime \
         jupyterlab_latex \
         jupyterlab_git \
         ipyparallel" && \
       source scl_source enable rh-python36 && \
       set -e && \
       for s in ${server_extensions}; do \
+        echo "Installing ${s}..."; \
         jupyter serverextension enable ${s} --py --sys-prefix; \
       done
       
+#        nbdime \
 RUN  notebook_extensions="widgetsnbextension \
         ipyevents \
-        nbdime \
         rise \
         qgrid \
         nglview \
@@ -197,51 +206,52 @@ RUN  notebook_extensions="widgetsnbextension \
       source scl_source enable rh-python36 && \
       set -e && \
       for n in ${notebook_extensions}; do \
+        echo "Installing ${n}..."; \
         jupyter nbextension install --py --sys-prefix ${n}; \
         jupyter nbextension enable --py --sys-prefix ${n}; \
       done
 
+#        @enlznep/runall-extension \
+#        jupyterlab-server-proxy \
+#        @lckr/jupyterlab_variableinspector \
+#        nbdime-jupyterlab \
+#        dask-labextension \
 RUN  lab_extensions="@jupyterlab/celltags \
-        @enlznep/runall-extension \
         @jupyterlab/toc \
         jupyterlab-spreadsheet \
         @krassowski/jupyterlab_go_to_definition \
         @jupyter-widgets/jupyterlab-manager \
-        jupyterlab-server-proxy \
         @lsst-sqre/jupyterlab-savequit \
         @pyviz/jupyterlab_pyviz \
         bqplot \
-        dask-labextension \
         ipyevents \
         ipyvolume \
         nglview-js-widgets \
         jupyter-threejs \
         jupyter-matplotlib \
         jupyterlab_bokeh \
-        nbdime-jupyterlab \
         jupyter_firefly_extensions \
         @jupyterlab/latex \
         jupyterlab-drawio \
         @jupyterlab/git \
         @jupyterlab/google-drive \
-        @lckr/jupyterlab_variableinspector \
         jupyterlab_tensorboard \
         @jupyterlab/hub-extension" && \
       source scl_source enable rh-python36 && \
       set -e && \
       for l in ${lab_extensions}; do \
+        echo "Installing ${l}..."; \
         jupyter labextension install --no-build ${l} ; \
         jupyter labextension enable ${l} ; \
       done
 
 ENV  NODE_OPTIONS=--max-old-space-size=4096
 RUN  source scl_source enable rh-python36 && \
-      npm cache clean && \
       jupyter lab clean && \
       jupyter lab build
 
-RUN curl -L https://github.com/javabean/su-exec/releases/download/v0.2/su-exec.amd64 > /usr/bin/su-exec \
-    && chmod ugo+x /usr/bin/su-exec
+#RUN curl -L https://github.com/javabean/su-exec/releases/download/v0.2/su-exec.amd64 > /usr/bin/su-exec \
+#    && chmod ugo+x /usr/bin/su-exec
 
 # Custom local files
 COPY profile.d/local03-showmotd.sh \
@@ -265,7 +275,7 @@ COPY 20_jupytervars /etc/sudoers.d/
 COPY pythonrc /etc/skel/.pythonrc
 COPY scripts/selfculler.py \
       scripts/launch.bash \
-      scripts/lablauncher.bash \
+      scripts/entrypoint.bash \
       scripts/runlab.sh \
       scripts/prepuller.sh \
       scripts/post-hook.sh \
@@ -277,5 +287,5 @@ RUN  ln -sf /opt/lsf/curr/conf/lsf.conf.co /etc/lsf.conf \
 ENV  LANG=C.UTF-8
 
 WORKDIR /tmp
-CMD [ "/opt/slac/jupyterlab/lablauncher.bash" ]
+CMD [ "/opt/slac/jupyterlab/entrypoint.bash" ]
 
