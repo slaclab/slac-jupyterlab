@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.0-cudnn7-devel-centos7
+FROM nvidia/cuda:10.1-cudnn7-devel-centos7
 
 USER root
 RUN   curl -sL https://rpm.nodesource.com/setup_10.x | bash - && \
@@ -138,9 +138,9 @@ RUN  source scl_source enable rh-python36 && \
         pystan \
         edward
 
-RUN source scl_source enable rh-python36 && \
-      pip3  --no-cache-dir  install --upgrade \
-        torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric  
+#RUN source scl_source enable rh-python36 && \
+#      pip3  --no-cache-dir  install --upgrade \
+#        torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric  
         
 # visualisation libs
 RUN  source scl_source enable rh-python36 && \
@@ -163,9 +163,11 @@ RUN  source scl_source enable rh-python36 && \
         nglview \
         hyperspy[all] \
         hyperspy_gui_ipywidgets \
+        Pillow \
         gmaps
 
 # compute and transport
+#        horovod 
 RUN  source scl_source enable rh-python36 && \
       pip3  --no-cache-dir  install --upgrade \
         mkl \
@@ -178,7 +180,6 @@ RUN  source scl_source enable rh-python36 && \
         firefly_client \
         mpi4py \
         ipyparallel \
-        horovod \
         deap \
         zmq
       
