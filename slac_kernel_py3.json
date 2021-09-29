@@ -1,9 +1,0 @@
-{
- "display_name": "SLAC_Stack (Python 3.6 SCL)",
- "language": "python",
- "argv": [
-    "/opt/slac/jupyterlab/launch.bash",
-     "3",
-    "{connection_file}"
- ]
-}
