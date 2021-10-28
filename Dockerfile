@@ -14,13 +14,15 @@ RUN conda install -c anaconda \
       scikit-learn \
       matplotlib \
       numdifftools \
-      typing-extensions==3.7.4.3 wrapt==1.12.1
+      typing-extensions==3.7.4.3 wrapt==1.12.1 \
+  && conda clean --all
 
 RUN conda install -c pytorch \
       cudatoolkit==11.3.1 pytorch==1.10.0 gpytorch \
-      botorch torchvision 
+      botorch torchvision \ 
+  && conda clean --all
 
-RUN /opt/conda/envs/rapids/bin/pip install \
+RUN /opt/conda/envs/rapids/bin/pip install --no-cache-dir \
       tensorflow-gpu==2.6.0 \
       tensorflow-datasets tensorflow-hub \
       keras==2.6.0  
