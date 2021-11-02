@@ -15,7 +15,7 @@ RUN conda install -c anaconda \
       matplotlib \
       numdifftools \
       typing-extensions==3.7.4.3 wrapt==1.12.1 \
-  && conda clean --all
+      tornado==6.1.0 
 
 RUN conda install -c pytorch \
       cudatoolkit==11.3.1 pytorch==1.10.0 gpytorch \
